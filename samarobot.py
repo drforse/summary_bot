@@ -65,7 +65,7 @@ def send_welcome(message):
 def add_to_samara(m):
     m.text = m.text.replace('>', '&gt;').replace('<', '&lt;')
     local_data = data.get(str(m.chat.id))
-    if not data:
+    if not local_data:
         local_data = {'saved': {},
                       'ids': []}
     if not m.reply_to_message:

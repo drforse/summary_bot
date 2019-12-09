@@ -10,7 +10,8 @@ import pytz
 import re
 import os
 import logging
-from funcs import cut_for_messages
+import traceback
+from funcs import *
 
 logging.basicConfig(level=logging.INFO)
 
@@ -63,7 +64,7 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda m: m.text.lower().startswith('всамару'))
 def add_to_samara(m):
-    m.text = m.text.replace('>', '&gt;').replace('<', '&lt;')
+    m.text = m.text.replace('>', '&gt;').replace('<', '&lt;')  # to avoid telegram parse errors
     local_data = data.get(str(m.chat.id))
     if not local_data:
         local_data = {'saved': {},
@@ -92,10 +93,9 @@ def add_to_samara(m):
         json.dump(data, history)
 
 
-@bot.message_handler(func=lambda m: re.compile(r'САМАР[АУ] ЗА ([0-9]+)').match(m.text.upper()))
+@bot.message_handler(func=lambda m: re.compile(r'САМАР[АУ] ЗА ([0-9]+)').match(m.text.upper()))  # I don't know regexp, if I would know, I would use regexp=, I guess
 def get_from_samara(m):
     local_data = data.get(str(m.chat.id))
-    print(local_data)
     sum = int(m.text.split()[-1])
     message_parts = []
     if sum < 100:
@@ -129,8 +129,7 @@ def get_from_samara(m):
             else:
                 bot.reply_to(m, part, parse_mode='html')
         except Exception as e:
-            print(e)
-            print(len(part))
+            log_err(traceback.format_exc(), m=m)
         n += 1
 
 
@@ -148,8 +147,6 @@ def delete_from_samara(m):
             msg = local_data['saved'].get(str(i))
             if msg:
                 all_chat_texts.append(msg.get('text'))
-        print(all_chat_texts)
-        print(remove_text)
         if remove_text not in all_chat_texts:
             bot.send_message(m.chat.id, 'Этого и так нет в самаре!')
             return

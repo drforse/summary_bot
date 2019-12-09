@@ -10,7 +10,6 @@ def cut_for_messages(message_text, limitation):
         parts_quantity = len(message_text) / limitation + 1 if len(message_text) % limitation == 0 else len(message_text) / limitation + 2
         parts_quantity = int(parts_quantity)
         for i in range(1, int(parts_quantity)):
-            print(f'[{n}:{limitation * i}]')
             yield message_text[n:limitation * i]
             n += limitation
     except:
